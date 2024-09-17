@@ -1,42 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+import { PostList } from "@/components/PostList";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { usePosts } from "@/hooks/usePosts";
 
 export default function Home() {
-  const [posts, setPosts] = useState([]);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch("/api/posts");
-        if (!res.ok) {
-          throw new Error("Failed to fetch posts");
-        }
-        const data = await res.json();
-        setPosts(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-
+  const { posts, error } = usePosts();
   if (error) {
-    return <div>Error: {error}</div>;
+    return <ErrorMessage error={error} />;
   }
 
   return (
     <div>
       <h1>Blog Posts</h1>
-      <ul>
-        {posts.map((post) => (
-          <li key={post.id}>
-            <h2>{post.title}</h2>
-            <p>{post.content}</p>
-          </li>
-        ))}
-      </ul>
+      <PostList posts={posts} />
     </div>
   );
 }
